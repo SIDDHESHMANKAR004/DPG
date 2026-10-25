@@ -1,0 +1,1266 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #202c3b;
+  background: #f7f8fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #f7f8fa;
+  color: #202c3b;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex: 0 0 252px;
+  flex-direction: column;
+  height: 100vh;
+  padding: 28px 18px 20px;
+  background: #fff;
+  border-right: 1px solid #e9edf1;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 1px 8px 48px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eaf4ef;
+  color: #24744d;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.brand strong {
+  display: block;
+  font-size: 16px;
+  letter-spacing: -0.4px;
+}
+
+.brand small {
+  display: block;
+  margin-top: 1px;
+  color: #84909d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.25px;
+}
+
+.nav-label,
+.eyebrow {
+  color: #8a95a2;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.nav-label {
+  padding: 0 11px;
+  margin-bottom: 12px;
+}
+
+.nav-list {
+  display: grid;
+  gap: 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 43px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #657181;
+  font-size: 13px;
+  font-weight: 550;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background: #f5f7f8;
+  color: #253345;
+}
+
+.nav-item.active {
+  background: #edf5f0;
+  color: #26724d;
+  font-weight: 650;
+}
+
+.nav-marker {
+  width: 22px;
+  color: #a1abb6;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-item.active .nav-marker {
+  color: #3d8a63;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  padding: 15px 10px 3px;
+  border-top: 1px solid #edf0f2;
+  color: #7b8794;
+  font-size: 11px;
+}
+
+.local-indicator,
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #44a373;
+}
+
+.main-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.topbar {
+  display: flex;
+  min-height: 65px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5.2%;
+  border-bottom: 1px solid #e9edf1;
+  background: rgb(255 255 255 / 72%);
+}
+
+.breadcrumb {
+  color: #657181;
+  font-size: 12px;
+}
+
+.breadcrumb span {
+  padding: 0 8px;
+  color: #b1bac3;
+}
+
+.local-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid #e8ecef;
+  border-radius: 20px;
+  background: #fff;
+  color: #667382;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.local-badge .local-indicator {
+  width: 6px;
+  height: 6px;
+  flex-basis: 6px;
+}
+
+.page-content {
+  width: min(100%, 1120px);
+  padding: 48px 5.2% 26px;
+  margin: 0 auto;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 31px;
+}
+
+.eyebrow {
+  margin-bottom: 9px;
+  font-size: 9px;
+  letter-spacing: 1.55px;
+}
+
+.page-heading h1 {
+  margin: 0;
+  color: #202c3b;
+  font-size: clamp(25px, 3vw, 32px);
+  font-weight: 650;
+  letter-spacing: -1px;
+}
+
+.page-heading p {
+  margin: 8px 0 0;
+  color: #778391;
+  font-size: 13px;
+}
+
+.connection-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 91px;
+  padding: 19px 21px;
+  margin-bottom: 35px;
+  border: 1px solid #e6ece8;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(30 54 42 / 2%);
+}
+
+.connection-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 10px;
+  background: #edf5f0;
+  color: #367d57;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.3px;
+}
+
+.connection-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.connection-copy h2 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.connection-copy p {
+  margin: 0;
+  color: #7b8794;
+  font-size: 11px;
+}
+
+.status-pill,
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  border: 1px solid #e9edf0;
+  border-radius: 20px;
+  background: #fafbfc;
+  color: #788491;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill.online {
+  border-color: #d8eadf;
+  background: #f1f8f3;
+  color: #347c53;
+}
+
+.status-pill.unavailable {
+  border-color: #f0e2d8;
+  background: #fbf5f1;
+  color: #9a6342;
+}
+
+.status-pill.unavailable .status-dot {
+  background: #cc8053;
+}
+
+.status-pill.loading .status-dot {
+  background: #a2adb7;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.section-heading p {
+  margin: 4px 0 0;
+  color: #87919d;
+  font-size: 11px;
+}
+
+.section-count {
+  color: #98a2ad;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.feature-card {
+  min-height: 189px;
+  padding: 18px 19px 16px;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  background: #fff;
+  color: inherit;
+  box-shadow: 0 2px 8px rgb(30 54 42 / 2%);
+}
+
+.feature-card:hover {
+  border-color: #c9ddd0;
+  box-shadow: 0 5px 16px rgb(30 54 42 / 5%);
+}
+
+.feature-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.feature-marker {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  background: #f2f5f6;
+  color: #73808e;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.feature-card h3 {
+  margin: 0 0 7px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.feature-card p {
+  min-height: 34px;
+  margin: 0;
+  color: #7a8693;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.feature-link {
+  display: block;
+  margin-top: 14px;
+  color: #43805d;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.feature-link span {
+  margin-left: 3px;
+}
+
+.unavailable-panel {
+  display: flex;
+  min-height: 280px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 20px;
+  border: 1px solid #e8edf0;
+  border-radius: 11px;
+  background: #fff;
+  text-align: center;
+}
+
+.unavailable-icon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: #f2f5f6;
+  color: #84909b;
+  font-size: 21px;
+}
+
+.unavailable-panel h2 {
+  margin: 16px 0 5px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.unavailable-panel p {
+  max-width: 420px;
+  margin: 0;
+  color: #7b8794;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.unavailable-panel .unavailable-note {
+  margin-top: 10px;
+  color: #9aa3ad;
+  font-size: 10px;
+}
+
+.page-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 21px;
+  margin-top: 39px;
+  border-top: 1px solid #e9edf1;
+  color: #99a2ad;
+  font-size: 10px;
+}
+
+.scanner-panel,
+.saved-project,
+.projects-empty {
+  padding: 20px;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(30 54 42 / 2%);
+}
+
+.scanner-panel {
+  margin-bottom: 28px;
+}
+
+.scanner-panel h2,
+.project-list-heading h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.scanner-panel > p {
+  margin: 6px 0 14px;
+  color: #7b8794;
+  font-size: 11px;
+}
+
+.scanner-form {
+  display: flex;
+  gap: 9px;
+}
+
+.scanner-form .form-control {
+  min-width: 0;
+  min-height: 40px;
+  border-color: #e2e8eb;
+  font-size: 12px;
+}
+
+.scanner-form .form-control:focus {
+  border-color: #91b8a0;
+  box-shadow: 0 0 0 3px rgb(61 138 99 / 10%);
+}
+
+.scanner-form .btn {
+  flex: 0 0 auto;
+  border-color: #347a52;
+  background: #347a52;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.scanner-note {
+  margin: 10px 0 0 !important;
+  color: #9aa3ad !important;
+  font-size: 10px !important;
+}
+
+.project-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 13px;
+}
+
+.project-list-heading > span {
+  color: #8f9aa5;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.projects-message,
+.projects-empty p {
+  color: #7b8794;
+  font-size: 12px;
+}
+
+.projects-empty {
+  padding: 34px 20px;
+  text-align: center;
+}
+
+.projects-empty h3 {
+  margin: 0 0 7px;
+  font-size: 14px;
+}
+
+.projects-empty p {
+  margin: 0;
+}
+
+.saved-projects {
+  display: grid;
+  gap: 13px;
+}
+
+.saved-project {
+  padding: 18px 20px;
+}
+
+.saved-project-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.saved-project-header h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.project-path {
+  overflow-wrap: anywhere;
+  margin: 0;
+  color: #8a95a2;
+  font-size: 10px;
+}
+
+.git-status {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 16px;
+  background: #f3f5f6;
+  color: #778391;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.git-status.is-git {
+  background: #f0f6f2;
+  color: #43805d;
+}
+
+.project-details {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 20px;
+  padding-top: 16px;
+}
+
+.project-details h4 {
+  margin: 0 0 9px;
+  color: #687584;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.technology-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.technology-badge {
+  padding: 4px 7px;
+  border: 1px solid #e6ece8;
+  border-radius: 5px;
+  background: #f8faf9;
+  color: #52745f;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.finding-list,
+.script-list {
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  color: #7b8794;
+  font-size: 10px;
+  list-style: none;
+}
+
+.script-list li {
+  display: flex;
+  gap: 7px;
+  overflow-wrap: anywhere;
+}
+
+.script-list code {
+  flex: 0 0 auto;
+  color: #52745f;
+  font-size: 10px;
+}
+
+.not-executed {
+  color: #9aa3ad;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.detail-muted {
+  color: #9aa3ad;
+  font-size: 10px;
+}
+
+.quality-controls > p {
+  margin-bottom: 14px;
+}
+
+.quality-actions {
+  display: flex;
+  gap: 9px;
+}
+
+.quality-actions .form-select {
+  min-width: 0;
+  max-width: 520px;
+  min-height: 40px;
+  border-color: #e2e8eb;
+  font-size: 12px;
+}
+
+.quality-actions .btn {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.quality-actions .btn-success {
+  border-color: #347a52;
+  background: #347a52;
+}
+
+.quality-project-path {
+  overflow-wrap: anywhere;
+  margin: 9px 0 0 !important;
+}
+
+.quality-state {
+  padding: 9px 11px;
+  margin-top: 13px;
+  border-radius: 6px;
+  background: #f2f5f6;
+  color: #687584;
+  font-size: 11px;
+}
+
+.quality-state.success {
+  background: #f0f7f2;
+  color: #397552;
+}
+
+.quality-state.failure {
+  background: #fbf3ef;
+  color: #9a6342;
+}
+
+.quality-state.cancelled,
+.quality-state.unavailable {
+  background: #f3f5f6;
+  color: #707c89;
+}
+
+.quality-results {
+  display: grid;
+  gap: 12px;
+}
+
+.check-card {
+  padding: 17px 19px;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.check-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.check-header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.check-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.check-status {
+  padding: 4px 7px;
+  border-radius: 12px;
+  background: #f2f4f5;
+  color: #76828e;
+  font-size: 9px;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.check-status.success {
+  background: #f0f7f2;
+  color: #397552;
+}
+
+.check-status.failure {
+  background: #fbf3ef;
+  color: #9a6342;
+}
+
+.check-status.unavailable {
+  background: #fbf5f1;
+  color: #9a6342;
+}
+
+.check-exit-code {
+  color: #909aa5;
+  font-size: 10px;
+}
+
+.check-note {
+  margin: 11px 0 0;
+  color: #7b8794;
+  font-size: 10px;
+}
+
+.diagnostic-list {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 12px 0 0;
+  list-style: none;
+}
+
+.diagnostic {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f2f3;
+}
+
+.diagnostic:last-child {
+  border-bottom: 0;
+}
+
+.diagnostic-severity {
+  flex: 0 0 auto;
+  min-width: 49px;
+  padding: 4px 5px;
+  border-radius: 4px;
+  background: #fbf3ef;
+  color: #9a6342;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.diagnostic-severity.warning {
+  background: #fbf7e9;
+  color: #94752e;
+}
+
+.diagnostic-content {
+  min-width: 0;
+}
+
+.diagnostic-content p {
+  overflow-wrap: anywhere;
+  margin: 0;
+  color: #465362;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.diagnostic-location {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+  color: #929ca7;
+  font-size: 9px;
+}
+
+.no-diagnostics {
+  margin: 12px 0 0;
+  color: #7b8794;
+  font-size: 11px;
+}
+
+.check-output {
+  padding-top: 10px;
+  margin-top: 12px;
+  border-top: 1px solid #edf0f2;
+}
+
+.check-output summary {
+  color: #697684;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.check-output pre {
+  overflow: auto;
+  max-height: 220px;
+  padding: 10px;
+  margin: 9px 0 0;
+  border-radius: 5px;
+  background: #f6f8f9;
+  color: #566372;
+  font-size: 9px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.git-overview-card,
+.git-summary-card,
+.git-file-section,
+.git-diff-card,
+.git-commits-card {
+  padding: 17px 19px;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.git-overview-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.git-overline {
+  color: #8994a0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.git-overview-card h2 {
+  overflow-wrap: anywhere;
+  margin: 5px 0 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.git-total-count {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 7px;
+  color: #7a8693;
+  font-size: 10px;
+}
+
+.git-total-count strong {
+  color: #347a52;
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.git-summary-card {
+  margin-bottom: 12px;
+}
+
+.git-summary-card h3,
+.git-commits-card h3 {
+  margin: 0 0 9px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.git-summary-card p,
+.git-commits-card > p {
+  margin: 4px 0;
+  color: #74808d;
+  font-size: 10px;
+}
+
+.git-warning {
+  font-size: 11px;
+}
+
+.git-file-grid,
+.git-diff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+.git-file-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.git-file-heading h4 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.git-file-heading span {
+  color: #8994a0;
+  font-size: 10px;
+}
+
+.git-empty-list {
+  margin: 10px 0 0;
+  color: #9aa3ad;
+  font-size: 10px;
+}
+
+.git-file-list {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 10px 0 0;
+  list-style: none;
+}
+
+.git-file-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.git-file-list code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #687584;
+  font-size: 9px;
+}
+
+.git-file-status,
+.secret-warning {
+  flex: 0 0 auto;
+  color: #9aa3ad;
+  font-size: 8px;
+}
+
+.secret-warning {
+  color: #a16d3e;
+}
+
+.git-diff-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.git-diff-card summary {
+  color: #596675;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.git-diff-card pre {
+  overflow: auto;
+  max-height: 300px;
+  padding: 11px;
+  margin: 12px 0 0;
+  border-radius: 5px;
+  background: #f6f8f9;
+  color: #596675;
+  font-size: 9px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.git-diff-card > p {
+  margin: 10px 0 0;
+  color: #929ca7;
+  font-size: 9px;
+}
+
+.git-commits-card ul {
+  display: grid;
+  gap: 9px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.git-commits-card li {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.git-commits-card code {
+  color: #43805d;
+  font-size: 9px;
+}
+
+.git-commits-card li span {
+  overflow: hidden;
+  color: #596675;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.git-commits-card time {
+  color: #929ca7;
+  font-size: 9px;
+}
+
+.report-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.report-actions .form-label {
+  margin-bottom: 5px;
+  color: #687584;
+  font-size: 10px;
+}
+
+.report-actions .form-control {
+  min-height: 39px;
+  border-color: #e2e8eb;
+  font-size: 11px;
+}
+
+.report-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.report-buttons .btn {
+  min-height: 39px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.report-buttons .btn-success {
+  border-color: #347a52;
+  background: #347a52;
+}
+
+.report-privacy-note {
+  margin: 10px 0 0 !important;
+  color: #9aa3ad !important;
+  font-size: 10px !important;
+}
+
+.report-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.report-counts span {
+  padding: 7px 10px;
+  border: 1px solid #e7ecef;
+  border-radius: 7px;
+  background: #fff;
+  color: #778391;
+  font-size: 10px;
+}
+
+.report-counts strong {
+  margin-right: 3px;
+  color: #347a52;
+  font-size: 12px;
+}
+
+.report-preview {
+  overflow: auto;
+  max-height: 70vh;
+  padding: 20px;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.report-preview pre {
+  margin: 0;
+  color: #4e5b69;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767.98px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    padding: 14px 15px 10px;
+    border-right: 0;
+    border-bottom: 1px solid #e9edf1;
+  }
+
+  .brand {
+    margin: 0 5px 15px;
+  }
+
+  .nav-label,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .nav-item {
+    flex: 0 0 auto;
+    gap: 7px;
+    min-height: 37px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .nav-marker {
+    width: auto;
+    font-size: 9px;
+  }
+
+  .topbar {
+    min-height: 52px;
+    padding: 0 18px;
+  }
+
+  .page-content {
+    padding: 33px 18px 22px;
+  }
+
+  .connection-card {
+    gap: 11px;
+    padding: 14px;
+  }
+
+  .connection-copy p {
+    font-size: 10px;
+  }
+
+  .project-details {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .saved-project-header {
+    flex-direction: column;
+  }
+
+  .quality-actions {
+    flex-direction: column;
+  }
+
+  .quality-actions .form-select {
+    max-width: none;
+  }
+
+  .git-file-grid,
+  .git-diff-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .report-buttons {
+    flex-direction: column;
+  }
+
+  .git-commits-card li {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .git-commits-card time {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 420px) {
+  .connection-card {
+    flex-wrap: wrap;
+  }
+
+  .status-pill {
+    margin-left: 53px;
+  }
+
+  .page-footer {
+    gap: 12px;
+    font-size: 9px;
+  }
+
+  .scanner-form {
+    flex-direction: column;
+  }
+}

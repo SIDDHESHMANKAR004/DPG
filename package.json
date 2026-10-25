@@ -1,0 +1,12 @@
+{
+  "name": "developer-work-assistant",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @developer-work-assistant/web",
+    "dev:api": "npm run dev --workspace @developer-work-assistant/api",
+    "build": "npm run build --workspaces"
+  }
+}
