@@ -7,6 +7,7 @@
   "scripts": {
     "dev:web": "npm run dev --workspace @developer-work-assistant/web",
     "dev:api": "npm run dev --workspace @developer-work-assistant/api",
+    "dev:agent": "npm run dev --workspace @developer-work-assistant/local-agent",
     "build": "npm run build --workspaces"
   }
 }

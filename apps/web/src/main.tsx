@@ -4,6 +4,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
+import {
+  LocalAgentConnectionPanel,
+  LocalAgentProvider,
+  useLocalAgent,
+} from "./localAgent.js";
+import {
+  LocalAgentGitPanel,
+  LocalAgentProjectsPanel,
+  LocalAgentQualityPanel,
+} from "./localAgentPanels.js";
 
 const sections = [
   { id: "overview", label: "Overview", marker: "01" },
@@ -531,6 +541,7 @@ function QualitySection() {
           ))}
         </div>
       )}
+      <LocalAgentQualityPanel />
     </>
   );
 }
@@ -773,6 +784,7 @@ function GitChangesSection() {
           </section>
         </>
       ) : null}
+      <LocalAgentGitPanel />
     </>
   );
 }
@@ -843,6 +855,7 @@ function ProjectsSection() {
 
   return (
     <>
+      <LocalAgentProjectsPanel />
       <section className="scanner-panel">
         <h2>Scan a project</h2>
         <p>Enter the absolute path to a project directory. Only that directory is scanned.</p>
@@ -934,6 +947,7 @@ function ProjectsSection() {
 function App() {
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [apiStatus, setApiStatus] = useState<ApiStatus>("loading");
+  const { status: localAgentStatus } = useLocalAgent();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -993,8 +1007,8 @@ function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <span className="local-indicator" />
-          <span>Local workspace</span>
+          <span className={`local-indicator ${localAgentStatus === "connected" ? "" : "disconnected"}`} />
+          <span>Local Agent {localAgentStatus}</span>
         </div>
       </aside>
 
@@ -1040,6 +1054,7 @@ function App() {
                       : "Unavailable"}
                 </span>
               </section>
+              <LocalAgentConnectionPanel />
 
               <div className="section-heading">
                 <div>
@@ -1108,6 +1123,8 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <LocalAgentProvider>
+      <App />
+    </LocalAgentProvider>
   </React.StrictMode>,
 );

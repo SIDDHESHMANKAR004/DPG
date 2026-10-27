@@ -206,6 +206,6 @@ async function saveProjects(projects: ProjectScan[]): Promise<void> {
   await rename(temporaryFile, projectsFile);
 }
 
-app.listen(port, "127.0.0.1", () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`API listening on http://localhost:${port}`);
 });
