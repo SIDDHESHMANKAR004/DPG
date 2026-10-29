@@ -1834,6 +1834,17 @@ body::after {
   color: var(--muted-soft);
 }
 
+.deployment-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.deployment-link:hover {
+  color: var(--accent-deep);
+  text-decoration: underline;
+}
+
 .scanner-panel,
 .saved-project,
 .projects-empty {

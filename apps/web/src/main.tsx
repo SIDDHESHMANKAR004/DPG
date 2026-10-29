@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { deployedSiteUrl } from "../deployment.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import {
@@ -1114,6 +1115,9 @@ function App() {
           <footer className="page-footer">
             <span>Developer Work Assistant</span>
             <span>Runs locally on your machine</span>
+            <a className="deployment-link" href={deployedSiteUrl} target="_blank" rel="noopener noreferrer">
+              Open live website <span aria-hidden="true">↗</span>
+            </a>
           </footer>
         </div>
       </main>
