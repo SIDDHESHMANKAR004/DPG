@@ -2,29 +2,24 @@
 
 ## Vercel frontend
 
-1. Before deploying, replace `YOUR-RENDER-SERVICE` in `vercel.json` with the Render service hostname. For example, if Render provides `https://developer-work-assistant-api.onrender.com`, use `https://developer-work-assistant-api.onrender.com/api/:path*` as the rewrite destination.
-2. Create a Vercel project for this repository with **Root Directory** set to the repository root (`.`).
-3. Use these settings (also configured in `vercel.json`):
+The frontend can be deployed as a static UI, but its `/api/...` features require the local API and are unavailable from a hosted page in local-only mode. The Vercel rewrite to Render has been removed.
+
+1. Create a Vercel project for this repository with **Root Directory** set to the repository root (`.`).
+2. Use these settings (also configured in `vercel.json`):
    - Install command: `npm ci`
    - Build command: `npm run build --workspace @developer-work-assistant/web`
    - Output directory: `apps/web/dist`
-4. No frontend API environment variable is required. Existing relative `/api/...` requests are routed by the Vercel rewrite.
+3. Do not deploy the API as a public Render service.
 
-## Render backend
+## Local API
 
-Create a Render **Web Service** for the same repository:
-
-- Root Directory: repository root (`.`)
-- Runtime: Node
-- Build command: `npm ci && npm run build --workspace @developer-work-assistant/api`
-- Start command: `npm run start --workspace @developer-work-assistant/api`
-- Environment: set `NODE_VERSION` to `22` (or a supported Node 22 release).
-- `PORT` is supplied by Render; the API defaults to `3001` when it is not set.
-
-The API binds to `0.0.0.0` for hosted access. No CORS setting is needed while browser API calls use the Vercel same-origin rewrite.
+- Start with `npm run dev:api` from the repository root.
+- The API binds only to `127.0.0.1`, defaults to port `3001`, and accepts dashboard origins on local Vite ports `5173` and `5174`.
+- Run the web dashboard locally with `npm run dev:web`; its existing Vite `/api` proxy connects to the loopback API.
+- Stop any previously deployed public Render API service. A source change cannot disable an already running deployment.
 
 ## Current deployment limitations
 
-- Project metadata, activity, and reports remain JSON files under `apps/api/data` relative to the API process working directory. Render's local filesystem is ephemeral by default, so this data can be lost when the service restarts or redeploys. PostgreSQL migration and persistent-disk configuration are not included.
-- The project scanner and local quality/Git checks access paths on the API host. A hosted Render API cannot access a developer's local computer directories; these features work only for directories available to the backend service.
+- Project metadata, activity, and reports remain JSON files under `apps/api/data` relative to the API process working directory.
+- Project scanning and local quality/Git checks access directories available to the local API process.
 - There is no Neon PostgreSQL connection or `DATABASE_URL` configuration in this project. No database credentials should be added to Vercel frontend environment variables.

@@ -172,6 +172,10 @@ export function LocalAgentProvider({ children }: { children: ReactNode }) {
         return result;
       } catch (reason) {
         const message = reason instanceof Error ? reason.message : "Local Agent request failed.";
+        if (/HTTP 401|valid Local Agent session token/i.test(message)) {
+          sessionStorage.removeItem(storageKey);
+          setConfig((current) => ({ ...current, token: "" }));
+        }
         if (
           reason instanceof TypeError ||
           /session token|origin is not allowed|invalid local agent host/i.test(message)
@@ -322,7 +326,7 @@ export function LocalAgentConnectionPanel() {
             type="password"
             value={token}
             onChange={(event) => setToken(event.target.value)}
-            placeholder="Paste session token from agent terminal"
+            placeholder="Enter token shown in the agent terminal"
             aria-label="Local Agent session token"
             autoComplete="off"
           />
@@ -336,7 +340,7 @@ export function LocalAgentConnectionPanel() {
             </button>
           )}
         </form>
-        <p className="agent-help">Start with <code>npm run dev:agent</code>. The token stays in this browser session.</p>
+        <p className="agent-help">Start with <code>npm run dev:agent</code>, then type <code>show-token</code> in its terminal. The token stays in this browser session.</p>
         {error && <div className="agent-connect-error" role="alert">{error}</div>}
       </div>
       <span className={`status-pill ${status === "connected" ? "online" : "unavailable"}`}>

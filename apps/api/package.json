@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "tsx --test src/scanner.test.ts src/quality.test.ts src/gitChanges.test.ts src/reports.test.ts"
+    "test": "tsx --test src/scanner.test.ts src/quality.test.ts src/gitChanges.test.ts src/reports.test.ts src/serverSecurity.test.ts"
   },
   "dependencies": {
     "express": "^5.1.0"

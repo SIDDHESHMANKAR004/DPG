@@ -2,7 +2,7 @@ import express from "express";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { ScanInputError, scanProject, type ProjectScan } from "./scanner.js";
+import { resolveProjectName, ScanInputError, scanProject, type ProjectScan } from "./scanner.js";
 import { runQualityChecks } from "./quality.js";
 import { getGitChanges } from "./gitChanges.js";
 import {
@@ -21,6 +21,17 @@ const app = express();
 const port = Number(process.env.PORT ?? 3001);
 const dataDirectory = path.join(process.cwd(), "data");
 const projectsFile = path.join(dataDirectory, "projects.json");
+const allowedLocalOrigins = new Set([
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+]);
+const allowedLocalHosts = new Set([
+  `localhost:${port}`,
+  `127.0.0.1:${port}`,
+  ...[...allowedLocalOrigins].map((origin) => new URL(origin).host),
+]);
 
 function requestLocalDate(value: unknown): string | undefined {
   if (typeof value === "string") return validateReportDate(value) ? value : undefined;
@@ -30,6 +41,38 @@ function requestLocalDate(value: unknown): string | undefined {
   const day = String(now.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+app.use((request, response, next) => {
+  const host = request.get("host")?.toLowerCase();
+  if (!host || !allowedLocalHosts.has(host)) {
+    response.status(403).json({ error: "Invalid local API host." });
+    return;
+  }
+
+  const origin = request.get("origin");
+  if (origin && !allowedLocalOrigins.has(origin)) {
+    response.status(403).json({ error: "Request origin is not allowed by the local API." });
+    return;
+  }
+  if (origin) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Vary", "Origin");
+    response.setHeader("Access-Control-Allow-Private-Network", "true");
+  }
+
+  if (request.method === "OPTIONS") {
+    if (!origin) {
+      response.status(403).end();
+      return;
+    }
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    response.setHeader("Access-Control-Max-Age", "300");
+    response.status(204).end();
+    return;
+  }
+  next();
+});
 
 app.use(express.json({ limit: "10kb" }));
 
@@ -192,7 +235,11 @@ app.use(
 
 async function readSavedProjects(): Promise<ProjectScan[]> {
   try {
-    return JSON.parse(await readFile(projectsFile, "utf8")) as ProjectScan[];
+    const projects = JSON.parse(await readFile(projectsFile, "utf8")) as ProjectScan[];
+    return projects.map((project) => ({
+      ...project,
+      name: resolveProjectName(project.name, project.directory),
+    }));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;
@@ -206,6 +253,6 @@ async function saveProjects(projects: ProjectScan[]): Promise<void> {
   await rename(temporaryFile, projectsFile);
 }
 
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, "127.0.0.1", () => {
   console.log(`API listening on http://localhost:${port}`);
 });

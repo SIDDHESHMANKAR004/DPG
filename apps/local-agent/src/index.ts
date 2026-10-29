@@ -2,6 +2,7 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer, type Server } from "node:http";
 import express, { type Request, type Response, type NextFunction } from "express";
 import path from "node:path";
+import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { getGitChanges } from "../../api/src/gitChanges.js";
 import type { ProjectScan } from "../../api/src/scanner.js";
@@ -10,6 +11,7 @@ import { runLocalQuality } from "./qualityRunner.js";
 import { ProjectRegistry } from "./security.js";
 
 const defaultPort = 4317;
+const sessionLifetimeMs = 12 * 60 * 60 * 1000;
 const defaultOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -28,6 +30,7 @@ export interface LocalAgentServer {
   server: Server;
   token: string;
   registry: ProjectRegistry;
+  revokeToken(): void;
   listen(): Promise<void>;
   close(): Promise<void>;
 }
@@ -56,8 +59,25 @@ function constantTimeTokenMatch(expected: string, provided: string): boolean {
   return expectedBytes.length === providedBytes.length && timingSafeEqual(expectedBytes, providedBytes);
 }
 
+class SessionCredential {
+  private readonly expiresAt = Date.now() + sessionLifetimeMs;
+  private revoked = false;
+
+  constructor(private readonly token: string) {}
+
+  matches(provided: string): boolean {
+    return !this.revoked &&
+      Date.now() < this.expiresAt &&
+      constantTimeTokenMatch(this.token, provided);
+  }
+
+  revoke(): void {
+    this.revoked = true;
+  }
+}
+
 function secureMiddleware(
-  token: string,
+  credential: SessionCredential,
   allowedOrigins: Set<string>,
   getPort: () => number,
 ): express.RequestHandler {
@@ -95,7 +115,7 @@ function secureMiddleware(
 
     const authorization = request.get("authorization");
     const match = authorization?.match(/^Bearer ([A-Fa-f0-9]{64})$/);
-    if (!match || !constantTimeTokenMatch(token, match[1])) {
+    if (!match || !credential.matches(match[1])) {
       response.status(401).json({ error: "A valid Local Agent session token is required." });
       return;
     }
@@ -119,6 +139,24 @@ function projectFromRequest(
   return registered.scan;
 }
 
+function projectForResponse(project: ProjectScan): ProjectScan {
+  return { ...project, directory: path.basename(project.directory) || "Project" };
+}
+
+function relativeFileForResponse(file: string, directory: string): string | undefined {
+  if (!path.isAbsolute(file)) return file;
+  const relative = path.relative(directory, file);
+  if (
+    !relative ||
+    relative === ".." ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  ) {
+    return undefined;
+  }
+  return relative.split(path.sep).join("/");
+}
+
 export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentServer {
   const port = options.port ?? Number(process.env.LOCAL_AGENT_PORT ?? defaultPort);
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
@@ -129,12 +167,13 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
     throw new Error("Local Agent token must be a 32-byte hexadecimal value.");
   }
   const allowedOrigins = getAllowedOrigins(options.allowedOrigins);
+  const credential = new SessionCredential(token);
   const registry = new ProjectRegistry();
   const app = express();
   let actualPort = port;
 
   app.disable("x-powered-by");
-  app.use(secureMiddleware(token, allowedOrigins, () => actualPort));
+  app.use(secureMiddleware(credential, allowedOrigins, () => actualPort));
   app.use(express.json({ limit: maxJsonBytes, strict: true }));
 
   app.get("/health", (_request, response) => {
@@ -143,7 +182,7 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
 
   app.get("/projects", (_request, response) => {
     response.json({
-      projects: registry.list().map(({ id, scan }) => ({ id, project: scan })),
+      projects: registry.list().map(({ id, scan }) => ({ id, project: projectForResponse(scan) })),
     });
   });
 
@@ -158,7 +197,9 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
     }
     try {
       const registered = await registry.register(request.body.directory);
-      response.json({ project: { id: registered.id, project: registered.scan } });
+      response.json({
+        project: { id: registered.id, project: projectForResponse(registered.scan) },
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Project scan failed.";
       response.status(400).json({ error: message });
@@ -174,7 +215,19 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
     });
     try {
       const result = await collectErrors(project, controller.signal);
-      if (!response.destroyed) response.json({ result });
+      if (!response.destroyed) {
+        response.json({
+          result: {
+            ...result,
+            project: path.basename(project.directory) || "Project",
+            diagnostics: result.diagnostics.flatMap((diagnostic) => {
+              if (!diagnostic.file) return [diagnostic];
+              const file = relativeFileForResponse(diagnostic.file, project.directory);
+              return file ? [{ ...diagnostic, file }] : [{ ...diagnostic, file: undefined }];
+            }),
+          },
+        });
+      }
     } catch (error) {
       if (!response.destroyed) next(error);
     }
@@ -206,12 +259,19 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
       response.json({
         result: {
           ...result,
+          project: path.basename(project.directory) || "Project",
           checks: {
             ...result.checks,
+            project: path.basename(project.directory) || "Project",
             checks: result.checks.checks.map((check) => ({
               ...check,
               stdout: "",
               stderr: "",
+              diagnostics: check.diagnostics.flatMap((diagnostic) => {
+                if (!diagnostic.file) return [diagnostic];
+                const file = relativeFileForResponse(diagnostic.file, project.directory);
+                return file ? [{ ...diagnostic, file }] : [{ ...diagnostic, file: undefined }];
+              }),
             })),
           },
         },
@@ -226,6 +286,7 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
     if (!project) return;
     try {
       const result = await getGitChanges(project);
+      result.project = path.basename(project.directory) || "Project";
       for (const category of [result.staged, result.unstaged, result.untracked]) {
         for (const file of category) {
           if (file.likelySecret) {
@@ -260,6 +321,7 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
     server,
     token,
     registry,
+    revokeToken: () => credential.revoke(),
     listen: () =>
       new Promise((resolve, reject) => {
         server.once("error", reject);
@@ -272,6 +334,7 @@ export function createLocalAgent(options: LocalAgentOptions = {}): LocalAgentSer
       }),
     close: () =>
       new Promise((resolve, reject) => {
+        credential.revoke();
         if (!server.listening) {
           resolve();
           return;
@@ -292,8 +355,15 @@ if (isEntrypoint) {
   const address = agent.server.address();
   const port = address && typeof address !== "string" ? address.port : defaultPort;
   console.log(`Local Agent listening at http://127.0.0.1:${port}`);
-  console.log(`Local Agent session token: ${agent.token}`);
-  console.log("Copy the session token into the dashboard. Do not share it.");
+  console.log("Session token expires in 12 hours. Type `show-token` here to reveal it locally.");
+  if (process.stdin.isTTY) {
+    const terminal = createInterface({ input: process.stdin, output: process.stdout });
+    terminal.on("line", (command) => {
+      if (command.trim() === "show-token") {
+        process.stdout.write(`Local Agent session token (sensitive): ${agent.token}\n`);
+      }
+    });
+  }
 
   const stop = () => {
     void agent.close().then(() => process.exit(0));

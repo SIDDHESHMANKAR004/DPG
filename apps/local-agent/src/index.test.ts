@@ -69,11 +69,26 @@ describe("Local Agent API security and endpoints", () => {
       const noToken = await request(port, "/health", { origin });
       assert.equal(noToken.status, 401);
 
+      const noProjectsToken = await request(port, "/projects", { origin });
+      assert.equal(noProjectsToken.status, 401);
+
+      const invalidToken = await request(port, "/projects", {
+        origin,
+        token: "f".repeat(64),
+      });
+      assert.equal(invalidToken.status, 401);
+
       const untrustedOrigin = await request(port, "/health", {
         origin: "https://attacker.example",
         token: agent.token,
       });
       assert.equal(untrustedOrigin.status, 403);
+
+      const untrustedProjectsOrigin = await request(port, "/projects", {
+        origin: "https://attacker.example",
+        token: agent.token,
+      });
+      assert.equal(untrustedProjectsOrigin.status, 403);
 
       const invalidHost = await request(port, "/health", {
         origin,
@@ -95,6 +110,13 @@ describe("Local Agent API security and endpoints", () => {
         status: "ok",
         agent: "developer-work-assistant-local-agent",
       });
+
+      agent.revokeToken();
+      const revokedToken = await request(port, "/projects", {
+        origin,
+        token: agent.token,
+      });
+      assert.equal(revokedToken.status, 401);
     } finally {
       await agent.close();
     }
@@ -133,8 +155,19 @@ describe("Local Agent API security and endpoints", () => {
         body: { directory },
       });
       assert.equal(scan.status, 200);
-      const project = (scan.body as { project: { id: string; project: { name: string } } }).project;
+      const project = (scan.body as {
+        project: { id: string; project: { name: string; directory: string } };
+      }).project;
       assert.equal(project.project.name, "agent-api-sample");
+      assert.equal(project.project.directory, path.basename(directory));
+      assert.equal(path.isAbsolute(project.project.directory), false);
+
+      const projects = await request(port, "/projects", { origin, token: agent.token });
+      const projectList = projects.body as {
+        projects: { id: string; project: { directory: string } }[];
+      };
+      assert.equal(projectList.projects[0].project.directory, path.basename(directory));
+      assert.ok(!JSON.stringify(projects.body).includes(directory));
 
       const unregistered = await request(port, "/projects/not-registered/git/changes", {
         origin,
@@ -148,6 +181,37 @@ describe("Local Agent API security and endpoints", () => {
         token: agent.token,
       });
       assert.equal(errors.status, 200);
+      assert.equal(
+        (errors.body as { result: { project: string } }).result.project,
+        path.basename(directory),
+      );
+      const errorDiagnostics = (errors.body as {
+        result: { diagnostics: { file?: string }[] };
+      }).result.diagnostics;
+      assert.ok(errorDiagnostics.every((diagnostic) =>
+        !diagnostic.file || !path.isAbsolute(diagnostic.file),
+      ));
+
+      const quality = await request(port, `/projects/${project.id}/quality/run`, {
+        method: "POST",
+        origin,
+        token: agent.token,
+        body: {},
+      });
+      assert.equal(quality.status, 200);
+      const qualityResult = (quality.body as {
+        result: {
+          project: string;
+          checks: { project: string; checks: { diagnostics: { file?: string }[] }[] };
+        };
+      }).result;
+      assert.equal(qualityResult.project, path.basename(directory));
+      assert.equal(qualityResult.checks.project, path.basename(directory));
+      assert.ok(qualityResult.checks.checks.every((check) =>
+        check.diagnostics.every((diagnostic) =>
+          !diagnostic.file || !path.isAbsolute(diagnostic.file),
+        ),
+      ));
 
       const git = await request(port, `/projects/${project.id}/git/changes`, {
         origin,
@@ -155,6 +219,10 @@ describe("Local Agent API security and endpoints", () => {
       });
       assert.equal(git.status, 200);
       assert.equal((git.body as { result: { status: string } }).result.status, "not-git");
+      assert.equal(
+        (git.body as { result: { project: string } }).result.project,
+        path.basename(directory),
+      );
     } finally {
       await agent.close();
     }

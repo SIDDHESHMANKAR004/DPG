@@ -21,6 +21,7 @@ const secretFilePattern =
   /^(?:\.env(?:\..*)?|\.npmrc|\.pypirc|credentials(?:\..*)?|id_(?:rsa|ed25519))$|(?:\.(?:pem|key|p12|pfx))$/i;
 const maxEntries = 10_000;
 const maxDepth = 8;
+const placeholderProjectName = /^(?:package(?:\.json)?)$/i;
 
 export interface ProjectScan {
   directory: string;
@@ -35,6 +36,17 @@ export interface ProjectScan {
 }
 
 export class ScanInputError extends Error {}
+
+export function resolveProjectName(name: unknown, directory: string): string {
+  if (typeof name === "string") {
+    const candidate = name.trim();
+    if (candidate && !placeholderProjectName.test(candidate)) return candidate;
+  }
+  const directoryName = path.basename(directory);
+  return directoryName && !placeholderProjectName.test(directoryName)
+    ? directoryName
+    : "Project";
+}
 
 function isSecretFile(name: string): boolean {
   return secretFilePattern.test(name);
@@ -192,10 +204,7 @@ export async function scanProject(inputDirectory: string): Promise<ProjectScan> 
 
   return {
     directory,
-    name:
-      typeof manifest?.name === "string" && manifest.name.trim()
-        ? manifest.name
-        : path.basename(directory),
+    name: resolveProjectName(manifest?.name, directory),
     scannedAt: new Date().toISOString(),
     technologies,
     packageManager,

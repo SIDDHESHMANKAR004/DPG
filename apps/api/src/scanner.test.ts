@@ -62,6 +62,24 @@ describe("scanProject", () => {
     assert.ok(project.findings.includes("No root package.json found."));
   });
 
+  it("uses the directory name when the manifest name is missing or a placeholder", async () => {
+    const parent = await createProject();
+    const directory = path.join(parent, "MovieApp1");
+    await mkdir(directory);
+
+    for (const name of ["package", "package.json"]) {
+      await writeFile(path.join(directory, "package.json"), JSON.stringify({ name }));
+      assert.equal((await scanProject(directory)).name, "MovieApp1");
+    }
+
+    await writeFile(path.join(directory, "package.json"), JSON.stringify({}));
+    assert.equal((await scanProject(directory)).name, "MovieApp1");
+
+    const placeholderDirectory = path.join(parent, "package");
+    await mkdir(placeholderDirectory);
+    assert.equal((await scanProject(placeholderDirectory)).name, "Project");
+  });
+
   it("rejects non-absolute paths", async () => {
     await assert.rejects(scanProject("relative/path"), /absolute project directory/);
   });
